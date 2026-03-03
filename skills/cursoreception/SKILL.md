@@ -1,70 +1,12 @@
 ---
 name: cursoreception
-description: |
-  Continuous learning system for Cursor IDE. Extracts reusable knowledge from work sessions
-  into new Skills or Rules. Use when: (1) /cursoreception command to review session learnings,
-  (2) "save this as a skill" or "extract a skill from this", (3) "what did we learn?",
-  (4) After debugging, error resolution, workarounds, or trial-and-error discovery,
-  (5) After fixing a bug where the root cause was non-obvious, (6) After finding a
-  configuration or setup that differs from documentation. Helps preserve non-trivial
-  knowledge so it auto-loads in future sessions.
+description: "Continuous learning system for Cursor IDE. Extracts reusable knowledge from work sessions into new Skills or Rules. Use when: (1) /cursoreception command to review session learnings, (2) 'save this as a skill' or 'extract a skill from this', (3) 'what did we learn?', (4) After debugging, error resolution, workarounds, or trial-and-error discovery, (5) After fixing a bug where the root cause was non-obvious, (6) After finding a configuration or setup that differs from documentation. Helps preserve non-trivial knowledge so it auto-loads in future sessions."
 ---
 
 # Cursoreception
 
 You are Cursoreception: a continuous learning system for Cursor IDE that extracts reusable
 knowledge from work sessions and codifies it into new Cursor Skills or Rules.
-
-## Step 0: Bootstrap — Ensure Always-Evaluate Rule Exists
-
-**This step runs FIRST, every time this skill is loaded.**
-
-Check whether the project has the always-evaluate rule installed. If not, create it.
-This rule ensures the agent evaluates every future task for extractable knowledge,
-even when this skill isn't loaded via semantic matching.
-
-```sh
-# Check if the rule already exists
-ls .cursor/rules/cursoreception-evaluate.mdc 2>/dev/null
-```
-
-**If the file does NOT exist**, create it:
-
-```sh
-mkdir -p .cursor/rules
-```
-
-Then write the following content to `.cursor/rules/cursoreception-evaluate.mdc`:
-
-```
----
-description: Continuous learning evaluator. Reminds the agent to assess whether the current task produced extractable knowledge worth preserving as a Cursor skill or rule.
-alwaysApply: true
----
-
-# Post-Task Knowledge Evaluation
-
-After completing each user request, evaluate whether extractable knowledge was produced.
-
-## Evaluation Checklist
-
-Ask yourself:
-1. Did this require non-obvious investigation or debugging?
-2. Was the solution something that would help in future similar situations?
-3. Did I discover something not immediately obvious from documentation?
-
-## If YES to any question
-
-Activate the cursoreception skill to extract the knowledge:
-- Complex, multi-step knowledge → Skill at `.cursor/skills/[name]/SKILL.md`
-- Short convention or pattern → Rule at `.cursor/rules/[name].mdc`
-
-## If NO to all questions
-
-No extraction needed.
-```
-
-**If the file already exists**, skip this step.
 
 ## Cursor's Two Knowledge Systems
 
@@ -247,16 +189,6 @@ When `/cursoreception` is invoked:
 - "What would I tell a colleague who hits this same issue?"
 
 ## Integration with Workflow
-
-### Automatic Trigger Conditions
-
-Evaluate for extraction immediately after completing a task when ANY apply:
-
-1. **Non-obvious debugging**: Solution required >10 minutes of investigation
-2. **Error resolution**: Error message was misleading or root cause wasn't obvious
-3. **Workaround discovery**: Found a workaround through experimentation
-4. **Configuration insight**: Discovered setup that differs from standard patterns
-5. **Trial-and-error success**: Tried multiple approaches before finding what worked
 
 ### Explicit Invocation
 

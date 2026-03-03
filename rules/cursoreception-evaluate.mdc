@@ -1,0 +1,27 @@
+---
+description: Continuous learning evaluator — reminds the agent to assess whether the current task produced extractable knowledge worth preserving as a Cursor Skill or Rule.
+alwaysApply: true
+---
+
+# Post-Task Knowledge Evaluation
+
+After completing each user request, briefly evaluate whether extractable knowledge was produced.
+
+## Evaluation Checklist
+
+1. Did this require non-obvious investigation or debugging (>5 min)?
+2. Was the solution something that would help in future similar situations?
+3. Did I discover something not immediately obvious from documentation?
+4. Was an error message misleading, requiring a non-trivial root-cause analysis?
+5. Did I find a workaround or configuration through trial-and-error?
+
+## If YES to any question
+
+Activate the **cursoreception** skill to extract the knowledge:
+
+- Complex, multi-step knowledge → **Skill** at `.cursor/skills/<name>/SKILL.md`
+- Short convention or pattern → **Rule** at `.cursor/rules/<name>.mdc`
+
+## If NO to all questions
+
+No extraction needed — proceed normally.

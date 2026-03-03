@@ -1,0 +1,23 @@
+{
+  "name": "cursoreception",
+  "version": "2.0.0",
+  "description": "Continuous learning system that extracts reusable knowledge from work sessions into Cursor Skills and Rules. Automatically evaluates every task for non-obvious insights worth preserving.",
+  "author": {
+    "name": "Justin Song"
+  },
+  "homepage": "https://github.com/nicholasgriffintn/cursoreception",
+  "license": "MIT",
+  "keywords": [
+    "learning",
+    "knowledge-extraction",
+    "skills",
+    "rules",
+    "self-improving",
+    "meta-skill",
+    "continuous-learning"
+  ],
+  "logo": "assets/logo.svg",
+  "rules": "rules/",
+  "skills": "skills/",
+  "hooks": "hooks/hooks.json"
+}

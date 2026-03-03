@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "stop": [
+      {
+        "command": "./scripts/stop-evaluate.sh",
+        "loop_limit": 1
+      }
+    ]
+  }
+}
