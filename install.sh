@@ -58,7 +58,7 @@ install_project() {
   cp "$SCRIPT_DIR/skills/cursoreception/SKILL.md" "$root/.cursor/skills/cursoreception/"
   echo "  ✓ Skill → .cursor/skills/cursoreception/SKILL.md"
 
-  # Hook scripts
+  # Hook script
   mkdir -p "$root/.cursor/scripts/cursoreception"
   cp "$SCRIPT_DIR/scripts/stop-evaluate.sh" "$root/.cursor/scripts/cursoreception/"
   chmod +x "$root/.cursor/scripts/cursoreception/stop-evaluate.sh"
@@ -109,7 +109,7 @@ install_user() {
   cp "$SCRIPT_DIR/skills/cursoreception/SKILL.md" "$cursor_home/skills/cursoreception/"
   echo "  ✓ Skill → ~/.cursor/skills/cursoreception/SKILL.md"
 
-  # Hook scripts
+  # Hook script
   mkdir -p "$cursor_home/scripts/cursoreception"
   cp "$SCRIPT_DIR/scripts/stop-evaluate.sh" "$cursor_home/scripts/cursoreception/"
   chmod +x "$cursor_home/scripts/cursoreception/stop-evaluate.sh"

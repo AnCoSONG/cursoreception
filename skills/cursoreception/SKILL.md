@@ -1,16 +1,17 @@
 ---
 name: cursoreception
-description: "Continuous learning system for Cursor IDE. Extracts reusable knowledge from work sessions into new Skills or Rules. Use when: (1) /cursoreception command to review session learnings, (2) 'save this as a skill' or 'extract a skill from this', (3) 'what did we learn?', (4) After debugging, error resolution, workarounds, or trial-and-error discovery, (5) After fixing a bug where the root cause was non-obvious, (6) After finding a configuration or setup that differs from documentation. Helps preserve non-trivial knowledge so it auto-loads in future sessions."
+description: "Continuous learning system for Cursor IDE. Extracts reusable knowledge from work sessions into Skills, Rules, and AGENTS.md. Use when: (1) /cursoreception command to review session learnings, (2) 'save this as a skill' or 'extract a skill from this', (3) 'what did we learn?', (4) After debugging, error resolution, workarounds, or trial-and-error discovery, (5) After fixing a bug where the root cause was non-obvious, (6) After finding a configuration or setup that differs from documentation, (7) Asked to mine previous chats or maintain AGENTS.md memory."
 ---
 
 # Cursoreception
 
 You are Cursoreception: a continuous learning system for Cursor IDE that extracts reusable
-knowledge from work sessions and codifies it into new Cursor Skills or Rules.
+knowledge from work sessions and codifies it into Cursor Skills and Rules, with AGENTS.md
+as a lightweight supplement for user preferences and workspace facts.
 
-## Cursor's Two Knowledge Systems
+## Knowledge Systems
 
-Cursor provides two complementary mechanisms. Choose based on the nature of the knowledge:
+Choose based on the nature of the knowledge:
 
 ### Skills (`SKILL.md`)
 - Rich, detailed knowledge packages (problem + trigger + solution + verification)
@@ -24,6 +25,10 @@ Cursor provides two complementary mechanisms. Choose based on the nature of the 
 - Loaded via `alwaysApply: true`, `globs` file matching, or agent-picked via `description`
 - Best for: coding conventions, project patterns, file-type-specific knowledge
 
+### AGENTS.md (supplement)
+- Plain bullet points for user preferences and workspace facts that don't warrant a Skill or Rule
+- Location: `AGENTS.md` at project root — auto-loaded by Cursor at session start
+
 ### Decision Matrix
 
 | Knowledge type | Format | Why |
@@ -34,6 +39,8 @@ Cursor provides two complementary mechanisms. Choose based on the nature of the 
 | "When editing *.prisma files, do X" | Rule (`globs`) | File-type-specific |
 | Tool/API usage that docs don't cover | Skill | Needs examples and edge cases |
 | Project architecture decisions | Rule (`alwaysApply`) | Conventions that apply everywhere |
+| "User always prefers X over Y" | AGENTS.md | Recurring correction, stable preference |
+| "This repo uses monorepo with pnpm" | AGENTS.md | Durable workspace fact |
 
 ## When to Extract
 
@@ -169,6 +176,18 @@ description: Helps with npm problems
 |---|---|---|
 | Project-level | `.cursor/skills/[name]/SKILL.md` | `.cursor/rules/[name].mdc` |
 | User-level | `~/.cursor/skills/[name]/SKILL.md` | N/A (rules are project-only) |
+
+## AGENTS.md (Supplementary)
+
+When updating `AGENTS.md`, use incremental transcript processing:
+
+1. Read existing `AGENTS.md`, then load index at `.cursor/hooks/state/cursoreception-index.json`
+2. Only process transcripts not in the index or with newer mtime
+3. Extract recurring user corrections/preferences and durable workspace facts
+4. Merge: update matching bullets in place, add net-new, deduplicate
+5. Write back the index (store mtimes, remove deleted entries)
+
+**Output rules:** only `## Learned User Preferences` and `## Learned Workspace Facts` sections, plain bullets, max 12 per section. Never store secrets, one-off instructions, or transient details.
 
 ## Retrospective Mode
 
