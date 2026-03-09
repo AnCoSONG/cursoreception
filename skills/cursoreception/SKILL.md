@@ -1,13 +1,17 @@
 ---
 name: cursoreception
-description: "Continuous learning system for Cursor IDE. Extracts reusable knowledge from work sessions into Skills, Rules, and AGENTS.md. Use when: (1) /cursoreception command to review session learnings, (2) 'save this as a skill' or 'extract a skill from this', (3) 'what did we learn?', (4) After debugging, error resolution, workarounds, or trial-and-error discovery, (5) After fixing a bug where the root cause was non-obvious, (6) After finding a configuration or setup that differs from documentation, (7) Asked to mine previous chats or maintain AGENTS.md memory."
+description: "Continuous learning system for Cursor IDE. Extracts AND updates reusable knowledge from work sessions into Skills, Rules, and AGENTS.md. Use when: (1) /cursoreception command to review session learnings, (2) 'save this as a skill' or 'extract a skill from this', (3) 'what did we learn?', (4) After debugging, error resolution, workarounds, or trial-and-error discovery, (5) After fixing a bug where the root cause was non-obvious, (6) After finding a configuration or setup that differs from documentation, (7) Asked to mine previous chats or maintain AGENTS.md memory, (8) Existing skill/rule needs correction, supplementation, or refinement based on new findings."
 ---
 
 # Cursoreception
 
-You are Cursoreception: a continuous learning system for Cursor IDE that extracts reusable
-knowledge from work sessions and codifies it into Cursor Skills and Rules, with AGENTS.md
-as a lightweight supplement for user preferences and workspace facts.
+You are Cursoreception: a continuous learning system for Cursor IDE that extracts **and
+iteratively improves** reusable knowledge from work sessions, codifying it into Cursor
+Skills and Rules, with AGENTS.md as a lightweight supplement for user preferences and
+workspace facts.
+
+**Core principle:** Knowledge is living — this system both **creates new** and **updates
+existing** skills/rules when new insights refine, correct, or extend prior knowledge.
 
 ## Knowledge Systems
 
@@ -69,7 +73,7 @@ Before extracting, verify ALL of these:
 
 ### Step 1: Check for Existing Knowledge
 
-Search both skills and rules before creating anything new.
+Search **all** skill/rule locations (project-level AND user-level) before creating anything new.
 
 ```sh
 SKILL_DIRS=(
@@ -85,11 +89,60 @@ rg -i "keyword1|keyword2" .cursor/rules/ 2>/dev/null
 
 | Found | Action |
 |---|---|
-| Nothing related | Create new |
-| Same trigger and same fix | Update existing (bump version) |
-| Same trigger, different root cause | Create new, add `See also:` links |
-| Partial overlap | Update existing with new variant |
-| Stale or wrong | Deprecate, create replacement |
+| Nothing related | → **Create new** (Step 4) |
+| Same trigger and same fix | → **Update existing** — add new context/examples (Step 1a) |
+| Same trigger, different root cause | → **Create new**, add `See also:` links |
+| Partial overlap | → **Update existing** — merge new variant (Step 1a) |
+| Stale or wrong | → **Update existing** — correct/replace content (Step 1a) |
+
+### Step 1a: Update Existing Knowledge (Requires User Approval)
+
+When you determine that an existing skill or rule should be updated rather than creating a
+new one, you **MUST** present the update proposal to the user and get explicit approval
+before making any changes.
+
+**Update flow:**
+
+1. **Read** the full content of the existing skill/rule file
+2. **Analyze** what specifically needs to change (additions, corrections, refinements)
+3. **Prepare** a clear update proposal with:
+   - The file path (project-level or user/global-level)
+   - What sections will change and why
+   - A summary of the diff (what's being added/modified/removed)
+4. **Ask the user** for approval using AskQuestion:
+
+```
+Use AskQuestion to present the update proposal:
+
+Question: "I found an existing [skill/rule] that should be updated based on this session's findings:
+
+📄 File: [path to existing file]
+
+📝 Proposed changes:
+- [Section X]: [what will change and why]
+- [Section Y]: [what will change and why]
+
+💡 Reason: [why this update improves the existing knowledge]
+
+Do you approve this update?"
+
+Options:
+- "Approve — apply the update"
+- "Reject — skip this update"
+- "Modify — let me adjust the proposal first"
+```
+
+5. **Act** based on user response:
+   - **Approve**: Apply the update to the existing file
+   - **Reject**: Skip the update, do not modify the file
+   - **Modify**: Wait for user's adjustments, then re-propose
+
+**Important rules for updates:**
+- NEVER silently update an existing skill/rule — always ask first
+- Show concrete details in the proposal, not vague descriptions
+- For user-level skills (`~/.cursor/skills/`), be extra cautious — these affect ALL projects
+- If the update is trivial (e.g., fixing a typo), still ask but note it's minor
+- Preserve the original skill's structure and style when updating
 
 ### Step 2: Identify the Knowledge
 
@@ -104,7 +157,11 @@ Search the web when the topic involves specific technologies/frameworks, you're 
 about current best practices, or the solution might have changed recently. Skip for
 project-specific internal patterns or stable, well-understood concepts.
 
-### Step 4: Choose Format and Create
+### Step 4: Choose Format and Create/Update
+
+> If Step 1 determined this is an **update** to existing knowledge, follow Step 1a first
+> to get user approval, then apply changes to the existing file preserving its structure.
+> The templates below apply only to **new** creations.
 
 **If creating a Skill** — save to `.cursor/skills/[name]/SKILL.md`:
 
@@ -194,10 +251,12 @@ When updating `AGENTS.md`, use incremental transcript processing:
 When `/cursoreception` is invoked:
 
 1. **Review the Session**: Analyze the conversation for extractable knowledge
-2. **Identify Candidates**: List potential extractions with brief justifications
-3. **Choose Format**: Skill or Rule for each candidate
-4. **Extract**: Create the files (typically 1-3 per session)
-5. **Summarize**: Report what was created and why
+2. **Search Existing**: Check all skill/rule locations for related existing knowledge (Step 1)
+3. **Identify Candidates**: List potential extractions with brief justifications, marking each as **[NEW]** or **[UPDATE to: path/to/existing]**
+4. **Choose Format**: Skill or Rule for each candidate
+5. **For updates**: Present each update proposal to the user via AskQuestion (Step 1a) and wait for approval
+6. **For new creations**: Create the files directly
+7. **Summarize**: Report what was created/updated and why
 
 ## Self-Reflection Prompts
 
@@ -206,6 +265,8 @@ When `/cursoreception` is invoked:
 - "What error message or symptom led me here, and what was the actual cause?"
 - "Is this pattern specific to this project, or would it help in similar projects?"
 - "What would I tell a colleague who hits this same issue?"
+- "Does an existing skill/rule already cover this topic? If so, does it need updating with what I just learned?"
+- "Did I discover that an existing skill/rule was incomplete, outdated, or incorrect?"
 
 ## Integration with Workflow
 
@@ -226,15 +287,25 @@ If yes to any, invoke this skill immediately.
 
 ## Quality Gates
 
+### For all extractions (create or update)
 - [ ] Description contains specific trigger conditions
 - [ ] Solution has been verified to work
 - [ ] Content is specific enough to be actionable
 - [ ] Content is general enough to be reusable
 - [ ] No sensitive information (credentials, internal URLs)
-- [ ] Doesn't duplicate existing skills/rules
 - [ ] Correct format chosen (Skill vs Rule)
+
+### For new creations only
+- [ ] Doesn't duplicate existing skills/rules (checked in Step 1)
 - [ ] If Rule: under 50 lines, with correct `globs`/`alwaysApply`
 - [ ] If Skill: includes Problem, Trigger, Solution, Verification sections
+
+### For updates to existing knowledge
+- [ ] User has explicitly approved the update via AskQuestion (Step 1a)
+- [ ] Changes are additive or corrective, not destructive (preserve existing valid content)
+- [ ] Update reason is clearly justified (not just reformatting)
+- [ ] Original file structure and style are preserved
+- [ ] If user-level skill: confirmed the change benefits all projects, not just current one
 
 ## Anti-Patterns
 
@@ -243,3 +314,6 @@ If yes to any, invoke this skill immediately.
 - **Unverified solutions**: Only extract what actually worked.
 - **Wrong format**: Don't stuff a 200-line guide into a Rule. Don't create a Skill for "always use semicolons."
 - **Documentation duplication**: Link to official docs; add what's missing from them.
+- **Silent updates**: Never modify an existing skill/rule without presenting the proposal and receiving explicit user approval.
+- **Duplicate creation**: If a relevant skill/rule already exists, update it instead of creating a near-duplicate.
+- **Destructive updates**: When updating, preserve existing valid content. Add or refine — don't erase knowledge that's still correct.

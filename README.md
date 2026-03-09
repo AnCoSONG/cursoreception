@@ -1,21 +1,23 @@
 # Cursoreception
 
-A Cursor IDE plugin (adapted from [Claudeception](https://github.com/blader/Claudeception)) that enables Cursor's AI agent to extract non-obvious knowledge from work sessions into reusable Skills and Rules that auto-load when similar problems arise. Also updates AGENTS.md with user preferences and workspace facts as a lightweight supplement.
+A Cursor IDE plugin (adapted from [Claudeception](https://github.com/blader/Claudeception)) that enables Cursor's AI agent to **extract and iteratively improve** non-obvious knowledge from work sessions. Knowledge is saved as reusable Skills and Rules that auto-load when similar problems arise, and continuously refined as new insights emerge — with your explicit approval.
 
 ## What's Included
 
 | Component | Description |
 |---|---|
-| **Skill** (`skills/cursoreception/`) | Core extraction engine — identifies, formats, and saves knowledge as Skills or Rules |
-| **Rule** (`rules/cursoreception-evaluate.mdc`) | Always-on evaluator that reminds the agent to assess every task for extractable knowledge |
+| **Skill** (`skills/cursoreception/`) | Core engine — extracts new knowledge and proposes updates to existing Skills/Rules |
+| **Rule** (`rules/cursoreception-evaluate.mdc`) | Always-on evaluator that reminds the agent to assess every task for new or improvable knowledge |
 | **Hook** (`scripts/stop-evaluate.sh`) | `stop` hook — auto-prompts knowledge evaluation after each completed task |
 
 ## How It Works
 
 1. **Install the plugin** — from Cursor Marketplace or manually
-2. **`alwaysApply` rule** loads — reminds the agent to evaluate each task for extractable Skills/Rules
-3. **`stop` hook** fires — after task completion, sends a follow-up message to trigger knowledge evaluation
-4. **Knowledge saved** — as Skills (complex) or Rules (concise), plus AGENTS.md for lightweight preferences
+2. **`alwaysApply` rule** loads — reminds the agent to evaluate each task for extractable or improvable knowledge
+3. **`stop` hook** fires — after task completion, sends a follow-up message to trigger evaluation
+4. **Knowledge created or updated**:
+   - **New knowledge** → saved directly as Skill or Rule
+   - **Existing knowledge needs improvement** → update proposal shown via AskQuestion → applied only after your approval
 
 ## Installation
 
@@ -58,8 +60,9 @@ Restart Cursor after installation.
 
 The plugin works silently in the background:
 
-- The **rule** (`alwaysApply: true`) ensures the agent evaluates every task for extractable Skills/Rules
-- The **`stop` hook** prompts the agent to review for extractable knowledge after each completed task
+- The **rule** (`alwaysApply: true`) ensures the agent evaluates every task for extractable or improvable knowledge
+- The **`stop` hook** prompts the agent to review after each completed task
+- When updating an existing skill/rule, the agent asks for your approval first
 
 ### Explicit Mode
 
@@ -85,7 +88,7 @@ cursoreception/
 │   └── cursoreception-evaluate.mdc  # Always-on evaluation rule
 ├── skills/
 │   └── cursoreception/
-│       └── SKILL.md                 # Core extraction skill
+│       └── SKILL.md                 # Core extraction & update skill
 ├── hooks/
 │   └── hooks.json                   # Hook definitions
 ├── scripts/
@@ -99,11 +102,15 @@ cursoreception/
 
 ## Quality Gates
 
-Not everything gets extracted. Knowledge must be:
+Not everything gets extracted or updated. Knowledge must be:
 - **Reusable** — helps with future tasks, not just this one
 - **Non-trivial** — requires discovery, not just reading docs
 - **Specific** — has clear trigger conditions
 - **Verified** — actually tested and confirmed working
+
+Updates to existing knowledge additionally require:
+- **User approval** — proposed via AskQuestion before any change
+- **Non-destructive** — preserves existing valid content, adds or refines
 
 ## Research
 

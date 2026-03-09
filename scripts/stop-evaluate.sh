@@ -11,7 +11,7 @@ loop_count=$(echo "$input" | grep -o '"loop_count"[[:space:]]*:[[:space:]]*[0-9]
 if [ "$status" = "completed" ] && [ "$loop_count" = "0" ]; then
   cat << 'EOF'
 {
-  "followup_message": "Before ending, quickly evaluate: did this session produce any non-obvious knowledge worth preserving? If yes, extract it as a Skill or Rule using cursoreception. Also update AGENTS.md if you noticed recurring user preferences or durable workspace facts. If nothing notable, just say 'No extractable knowledge this session.' and stop."
+  "followup_message": "Before ending, quickly evaluate: did this session produce any non-obvious knowledge worth preserving or that improves existing knowledge? Search existing skills/rules first. If a related one exists, propose an update (ask user for approval). If nothing related exists, create a new Skill or Rule using cursoreception. Also update AGENTS.md if you noticed recurring user preferences or durable workspace facts. If nothing notable, just say 'No extractable knowledge this session.' and stop."
 }
 EOF
 else
