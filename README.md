@@ -45,6 +45,19 @@ git clone <repo-url> cursoreception && cd cursoreception
 ./install.sh --project ~/my-project
 ```
 
+**Update an existing installation:**
+
+```bash
+./install.sh --user --update
+./install.sh --project ~/my-project --update
+```
+
+The update command will:
+- Compare the installed version with the source version
+- Back up existing files before overwriting
+- Only update files that have actually changed
+- Skip if already up to date
+
 **Uninstall:**
 
 ```bash
@@ -52,7 +65,7 @@ git clone <repo-url> cursoreception && cd cursoreception
 ./install.sh --project ~/my-project --uninstall
 ```
 
-Restart Cursor after installation.
+Restart Cursor after installation or update.
 
 ## Usage
 
